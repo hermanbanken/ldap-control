@@ -11,12 +11,15 @@
 		$_GET['page'] = 'home';
 		
 	$pages = array(
-		'home'=> "Home", 
-		'calendar' => "Agenda's", 
-		'address' => "Adresboek", 
-		'media' => "Mediatheek", 
-		'backup' => "Backups"
+		'home'=> array("Home", true), 
+		'calendar' => array("Agenda's", true), 
+		'address' => array("Adresboek", true), 
+		'media' => array("Mediatheek", true), 
+		'backup' => array("Backups", true),
+		'user' => array("%u", false)
 	);
+	
+	include('lib/actions.php');
 	
 ?><!DOCTYPE html>
 <html>

@@ -2,13 +2,17 @@
 <div class="topbar" data-dropdown="dropdown">
   <div class="topbar-inner">
     <div class="container">
-      <h3><a href="#">Banken</a></h3>
+      <h3><a href=".">Banken</a></h3>
       <?php if($user) : ?>
 	  <ul class="nav">
 		<?php
-			foreach($pages as $page => $title){
+			foreach($pages as $page => $details){
+				list($title, $in_menu) = $details;
+				if(!$in_menu) continue;
 				$class = $page == $_GET['page'] ? 'active' : '';
-				echo "<li class='$class'><a href='?page=$page'>$title</a></li>";
+				echo "<li class='$class'><a href='?page=$page'>";
+				echo do_action('menu_title', $title);
+				echo "</a></li>";
 			}
 		?>
       </ul>
@@ -21,8 +25,8 @@
 			<?php echo $user ? $user['sn'][0] : 'Account'; ?>
 		  </a>
           <ul class="dropdown-menu">
-            <li><a href="#">Wijzig wachtwoord</a></li>
-            <li><a href="#">Pas gegevens aan</a></li>
+            <li><a href="?page=user">Wijzig wachtwoord</a></li>
+            <li><a href="?page=user">Pas gegevens aan</a></li>
             <li class="divider"></li>
             <li><a href="?logout=1">Uitloggen</a></li>
           </ul>
