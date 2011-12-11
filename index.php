@@ -25,7 +25,7 @@
 <link rel='stylesheet' type='text/css' href='style.css' />
 <link rel='stylesheet' type='text/css' href='bootstrap/bootstrap.min.css' />
 <link rel='stylesheet/less' type='text/less' href='bootstrap/lib/bootstrap.less' />
-<script src="jquery.min.js"></script>
+<script src="js/jquery.min.js"></script>
 <script src='bootstrap/js/bootstrap-alerts.js'></script>
 <script src='bootstrap/js/bootstrap-buttons.js'></script>
 <script src='bootstrap/js/bootstrap-dropdown.js'></script>
@@ -34,12 +34,12 @@
 <script src='bootstrap/js/bootstrap-popover.js'></script>
 <script src='bootstrap/js/bootstrap-scrollspy.js'></script>
 <script src='bootstrap/js/bootstrap-tabs.js'></script>
-<script src="less-1.1.5.min.js"></script>
+<script src="js/less-1.1.5.min.js"></script>
 </head>
 
 <body>
 <?php
-include('ldap.php');
+include('lib/ldap.php');
 $l = new LDAPAuth();
 
 // Login when processing form
@@ -56,7 +56,7 @@ include('header.php');
 
 // Show appropriate content
 if( $user) {
-	include('home.php');
+	include('content.php');
 } else {
 	include('login.php');
 }

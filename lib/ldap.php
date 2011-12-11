@@ -1,10 +1,4 @@
-<?php 
-
-$ldapconfig['host'] = '10.0.0.188';
-$ldapconfig['port'] = NULL;
-$ldapconfig['basedn'] = 'dc=fs,dc=hermanbanken,dc=nl';
-$ldapconfig['authrealm'] = 'Banken';
-
+<?php
 class LDAPAuth {
 	const host = '10.0.0.188';
 	const port = NULL;

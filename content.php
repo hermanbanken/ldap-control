@@ -17,7 +17,7 @@ elseif ( array_key_exists($_GET['page'], $pages))
 	<div class="container-fluid">
 	      <div class="sidebar">
 	        <div class="well">
-	          <img src='banken-img/<?php echo $page ?>.png' style='width:180px' />
+	          <img src='img/<?php echo $page ?>.png' style='width:180px' />
 			  <h5 style='text-align:center'><?php echo $title; ?></h5>
 	        </div>
 	      </div>
