@@ -21,8 +21,8 @@
 ?><!DOCTYPE html>
 <html>
 <head>
-<title>Banken</title>
-<link rel='stylesheet' type='text/css' href='banken.css' />
+<title>LDAP control</title>
+<link rel='stylesheet' type='text/css' href='style.css' />
 <link rel='stylesheet' type='text/css' href='bootstrap/bootstrap.min.css' />
 <link rel='stylesheet/less' type='text/less' href='bootstrap/lib/bootstrap.less' />
 <script src="jquery.min.js"></script>

@@ -2,7 +2,7 @@
 <ul class='menu' style='margin:0 auto; width:640px'>
 	<?php foreach($pages as $page => $title){ if($page != 'home'){ ?>
 		<li class=''><a href='?page=<?php echo $page ?>'>
-			<img src='banken-img/<?php echo $page ?>.png' />
+			<img src='img/<?php echo $page ?>.png' />
 			<span><?php echo $title ?></span>
 		</a></li>
 	<?php }} ?>
@@ -22,7 +22,7 @@ elseif ( array_key_exists($_GET['page'], $pages))
 	        </div>
 	      </div>
 	      <div class="content">
-			<?php include('pages/'.$_GET['page']); ?>
+			<?php include('pages/'.$_GET['page']).'.php'; ?>
 	      </div>
 	    </div>
 <?php } ?>
