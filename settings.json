@@ -1,0 +1,5 @@
+{
+	"port": 636,
+	"basedn":"dc=example,dc=com",
+	"authrealm":"Home Server"
+}

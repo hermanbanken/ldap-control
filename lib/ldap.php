@@ -1,15 +1,10 @@
 <?php
 class LDAPAuth {
-	const port = NULL;
-	const host = 'localhost';
-	const basedn = 'dc=fs,dc=hermanbanken,dc=nl';
-	const authrealm = 'Banken';
-	const ou = 'users';
-	const version = 3;
 	private $ds = false;
 	private $user = false;
 	
-	public function __construct(){
+	public function __construct($settings){
+		$this->settings = (object) $settings;
 		if(!$this->ds) $this->connect();
 	}
 	
@@ -28,8 +23,8 @@ class LDAPAuth {
 	private function connect(){
 		// Connect to LDAP server
 		try{
-			$this->ds = ldap_connect(self::host, self::port);
-			ldap_set_option($this->ds, LDAP_OPT_PROTOCOL_VERSION, self::version);
+			$this->ds = ldap_connect($this->settings->host, $this->settings->port);
+			ldap_set_option($this->ds, LDAP_OPT_PROTOCOL_VERSION, $this->settings->version);
 		} catch(Exception $e){
 			$this->ds = false;
 		}
@@ -49,7 +44,7 @@ class LDAPAuth {
 	}
 	
 	public function get_users(){
-    	$r = @ldap_search( $this->ds, self::basedn, 'objectclass=posixAccount');
+    	$r = @ldap_search( $this->ds, $this->settings->basedn, 'objectclass=posixAccount');
 		$u = array();
 		if ($r) {
 			$result = ldap_get_entries( $this->ds, $r);
@@ -64,7 +59,7 @@ class LDAPAuth {
 	}
 	
 	public function auth_user($uid, $pass){
-		$r = @ldap_search( $this->ds, self::basedn, 'uid=' . $uid);
+		$r = @ldap_search( $this->ds, $this->settings->basedn, 'uid=' . $uid);
         if ($r) {
             $result = ldap_get_entries( $this->ds, $r);
 			if ($result[0]) {
@@ -80,44 +75,10 @@ class LDAPAuth {
 	}
 	
 	public function ask_auth(){
-	    header('WWW-Authenticate: Basic realm="'.self::authrealm.'"');
+	    header('WWW-Authenticate: Basic realm="'.$this->settings->authrealm.'"');
 	    header('HTTP/1.0 401 Unauthorized');
 	    return NULL;
 	}
 	
 }
-
-function ldap_authenticate() {
-    global $ldapconfig;
-    global $PHP_AUTH_USER;
-    global $PHP_AUTH_PW;
-    $PHP_AUTH_USER = 'herman';
-	$PHP_AUTH_PW = 'de9db99e';
-    if ($PHP_AUTH_USER != "" && $PHP_AUTH_PW != "") {
-        $ds= ldap_connect($ldapconfig['host'],$ldapconfig['port']);
-        $r = ldap_search( $ds, $ldapconfig['basedn'], 'uid=' . $PHP_AUTH_USER);
-		
-        if ($r) {
-            $result = ldap_get_entries( $ds, $r);
-			var_dump($result);
-			exit;
-            if ($result[0]) {
-                if (@ldap_bind( $ds, $result[0]['dn'], $PHP_AUTH_PW) ) {
-                    return $result[0];
-                }
-            }
-        }
-    }
-    header('WWW-Authenticate: Basic realm="'.$ldapconfig['authrealm'].'"');
-    header('HTTP/1.0 401 Unauthorized');
-    return NULL;
-}
-/*
-if (($result = ldap_authenticate()) == NULL) {
-    echo('Authorization Failed');
-    exit(0);
-}
-echo('Authorization success');
-print_r($result);
-*/
 ?>

@@ -31,6 +31,14 @@ function print_breadcrumb($bread){
 	echo "</ul>";
 }
 
+function merge($a, $b){
+	$c = (array)($a) + array();
+	foreach((array) $b as $k => $v){
+		$c[$k] = $v;
+	}
+	return $c;
+}
+
 ################ Actions ###############
 
 function user_title($title){

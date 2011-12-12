@@ -1,6 +1,14 @@
 <?php 
 	session_start();
+	// This file CAN be accessed directly
 	define("BASEPATH", getcwd());
+	
+	include('lib/actions.php');
+	
+	// Fetch settings
+	$DEFAULT_SETTINGS = json_decode(file_get_contents('settings.default.json'));
+	$USER_DEFINED_SETTINGS = json_decode(file_get_contents('settings.json'));
+	$SETTINGS = merge($DEFAULT_SETTINGS, $USER_DEFINED_SETTINGS);
 	
 	// Logout when requested
 	if( isset($_GET['logout']) && $_GET['logout'] == '1'){
@@ -8,6 +16,7 @@
 		header('Location: .');
 	}
 	
+	// Default page
 	if( !isset($_GET['page']))
 		$_GET['page'] = 'home';
 		
@@ -19,8 +28,6 @@
 		'backup' => array("Backups", true),
 		'user' => array("%u", false)
 	);
-	
-	include('lib/actions.php');
 	
 ?><!DOCTYPE html>
 <html>
@@ -44,7 +51,7 @@
 <body>
 <?php
 include('lib/ldap.php');
-$l = new LDAPAuth();
+$l = new LDAPAuth($SETTINGS);
 
 if(!$l->is_connected())
 	die("Connecting LDAP server failed.");
