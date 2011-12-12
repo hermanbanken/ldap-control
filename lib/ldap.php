@@ -2,6 +2,7 @@
 class LDAPAuth {
 	const host = '10.0.0.188';
 	const port = NULL;
+	const host = 'localhost';
 	const basedn = 'dc=fs,dc=hermanbanken,dc=nl';
 	const authrealm = 'Banken';
 	const ou = 'users';
@@ -11,6 +12,10 @@ class LDAPAuth {
 	
 	public function __construct(){
 		if(!$this->ds) $this->connect();
+	}
+	
+	public function is_connected(){
+		return $this->ds && true;
 	}
 	
 	public static function ssha_encode($text) {
@@ -25,6 +30,12 @@ class LDAPAuth {
 		// Connect to LDAP server
 		$this->ds = ldap_connect(self::host, self::port);
 		ldap_set_option($this->ds, LDAP_OPT_PROTOCOL_VERSION, self::version);
+		try{
+			$this->ds = ldap_connect(self::host, self::port);
+			ldap_set_option($this->ds, LDAP_OPT_PROTOCOL_VERSION, self::version);
+		} catch(Exception $e){
+			$this->ds = false;
+		}
 	}
 	
 	public function is_authenticated(){

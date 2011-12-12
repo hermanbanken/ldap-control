@@ -1,5 +1,6 @@
 <?php 
-	session_start(); 
+	session_start();
+	define("BASEPATH", getcwd());
 	
 	// Logout when requested
 	if( isset($_GET['logout']) && $_GET['logout'] == '1'){
@@ -44,6 +45,9 @@
 <?php
 include('lib/ldap.php');
 $l = new LDAPAuth();
+
+if(!$l->is_connected())
+	die("Connecting LDAP server failed.");
 
 // Login when processing form
 if( $_SERVER['REQUEST_METHOD'] == 'POST'){
