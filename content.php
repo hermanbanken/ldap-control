@@ -21,7 +21,7 @@ elseif ( array_key_exists($_GET['page'], $pages))
 	      <div class="sidebar">
 	        <div class="well">
 				
-	          <img src='img/<?php echo $page ?>.png' style='width:180px' />
+	          <img id="pageimg" src='img/<?php echo $page ?>.png' style='width:180px' />
 			  <h5 style='text-align:center'>
 				<?php echo do_action('page_title', $title); ?>
 			  </h5>

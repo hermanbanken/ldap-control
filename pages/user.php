@@ -1,3 +1,8 @@
+<script>
+$("#pageimg").attr('src', <?php 
+	echo "\"data:image/jpeg;base64,".base64_encode($user['jpegphoto'][0])."\"";
+?>);
+</script>
 <form class='well' method='post' action='?page=user'>
 	<div class='row'>
 	<div class='span7'>

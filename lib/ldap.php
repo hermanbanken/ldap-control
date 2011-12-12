@@ -49,7 +49,7 @@ class LDAPAuth {
 	}
 	
 	public function get_users(){
-    	$r = ldap_search( $this->ds, self::basedn, 'objectclass=posixAccount');
+    	$r = @ldap_search( $this->ds, self::basedn, 'objectclass=posixAccount');
 		$u = array();
 		if ($r) {
 			$result = ldap_get_entries( $this->ds, $r);
@@ -57,6 +57,8 @@ class LDAPAuth {
 				if(!is_numeric($user))
 				$u[] = (object)$user;
 			}
+		} else {
+			die("<h1 style='color:white;text-align: center'>Not connected to LDAP</h1>");
 		}
 		return $u;
 	}
@@ -71,7 +73,9 @@ class LDAPAuth {
 					return $this->user;
                 }
             }
-        }
+        } else {
+			die("<h1 style='color:white;text-align: center'>Not connected to LDAP</h1>");
+		}
 		return false;
 	}
 	
