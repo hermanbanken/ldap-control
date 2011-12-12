@@ -1,6 +1,5 @@
 <?php
 class LDAPAuth {
-	const host = '10.0.0.188';
 	const port = NULL;
 	const host = 'localhost';
 	const basedn = 'dc=fs,dc=hermanbanken,dc=nl';
@@ -28,8 +27,6 @@ class LDAPAuth {
 	
 	private function connect(){
 		// Connect to LDAP server
-		$this->ds = ldap_connect(self::host, self::port);
-		ldap_set_option($this->ds, LDAP_OPT_PROTOCOL_VERSION, self::version);
 		try{
 			$this->ds = ldap_connect(self::host, self::port);
 			ldap_set_option($this->ds, LDAP_OPT_PROTOCOL_VERSION, self::version);
