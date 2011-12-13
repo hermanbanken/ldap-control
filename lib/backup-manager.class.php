@@ -48,7 +48,7 @@ class BackupPlan {
 	}
 	
 	public function get_backups(){
-		$this->backup_dir
+		$this->backup_dir;
 	}
 	
 	public static function test1(){

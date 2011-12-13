@@ -22,7 +22,7 @@
       <ul class="nav secondary-nav">
         <li class="dropdown">
           <a href="#" class="dropdown-toggle">
-			<?php echo $user ? $user['sn'][0] : 'Account'; ?>
+			<?php echo $user ? $user->sn : 'Account'; ?>
 		  </a>
           <ul class="dropdown-menu">
             <li><a href="?page=user">Wijzig wachtwoord</a></li>

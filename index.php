@@ -59,8 +59,7 @@ if(!$l->is_connected())
 
 // Login when processing form
 if( $_SERVER['REQUEST_METHOD'] == 'POST'){
-	$_SESSION['PHP_AUTH_USER'] = $_POST['uid'];
-    $_SESSION['PHP_AUTH_PW'] = $_POST['pass'];
+	$l->auth_user($_POST['uid'],$_POST['pass']);
 }
 
 // Fetch user

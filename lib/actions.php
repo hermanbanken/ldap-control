@@ -43,7 +43,7 @@ function merge($a, $b){
 
 function user_title($title){
 	global $user;
-	return str_replace( '%u', $user['sn'][0], $title );
+	return str_replace( '%u', $user->sn, $title );
 }
 register_action('page_title', 'user_title');
 

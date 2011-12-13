@@ -62,7 +62,6 @@ class LDAPAuth implements iAuth {
 		} else {
 			die("<h1 style='color:white;text-align: center'>Not connected to LDAP</h1>");
 		}
-		file_write_contents('users.log', json_encode($u));
 		return $u;
 	}
 	

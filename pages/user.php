@@ -1,6 +1,6 @@
 <script>
 $("#pageimg").attr('src', <?php 
-	echo "\"data:image/jpeg;base64,".base64_encode($user['jpegphoto'][0])."\"";
+	echo "\"data:image/jpeg;base64,".base64_encode($l->user->jpegphoto)."\"";
 ?>);
 </script>
 <form class='well' method='post' action='?page=user'>
