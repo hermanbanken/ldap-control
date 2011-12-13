@@ -4,11 +4,12 @@ require_once('user.php');
 
 class LDAPAuth implements iAuth {
 	private $ds = false;
-	private $user = false;
+	public $user = false;
 	
 	public function __construct($settings){
 		$this->settings = (object) $settings;
 		if(!$this->ds) $this->connect();
+		$this->is_authenticated();
 	}
 	
 	public function is_connected(){
@@ -38,10 +39,6 @@ class LDAPAuth implements iAuth {
     	global $PHP_AUTH_USER;
     	global $PHP_AUTH_PW;
 		if (
-			!empty($_SESSION['PHP_AUTH_CACHE'])
-		) {
-			$this->user = $_SESSION['PHP_AUTH_CACHE'];
-		} else if (
 			!empty($_SESSION['PHP_AUTH_USER']) && 
 			!empty($_SESSION['PHP_AUTH_PW']) && 
 			$this->user = $this->auth_user($_SESSION['PHP_AUTH_USER'], $_SESSION['PHP_AUTH_PW'])
@@ -72,10 +69,10 @@ class LDAPAuth implements iAuth {
             $result = ldap_get_entries( $this->ds, $r);
 			if ($result[0]) {
                 if (ldap_bind( $this->ds, $result[0]['dn'], $pass) ) {
-                	$this->user = $result[0];
+					$this->user = User::FromLDAP($result[0]);
 					$_SESSION['PHP_AUTH_USER'] = $uid;
 					$_SESSION['PHP_AUTH_PW'] = $pass;
-					$_SESSION['PHP_AUTH_CACHE'] = $this->user;
+					$_SESSION['PHP_AUTH_CACHE'] = $result[0];
 					return $this->user;
                 }
             }
