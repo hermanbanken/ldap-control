@@ -1,5 +1,6 @@
 <?php
 require_once('interface.auth.php');
+require_once('user.php');
 
 class LDAPAuth implements iAuth {
 	private $ds = false;
@@ -57,7 +58,7 @@ class LDAPAuth implements iAuth {
 			$result = ldap_get_entries( $this->ds, $r);
 			foreach($result as $user){
 				if(!is_numeric($user))
-				$u[] = (object)$user;
+				$u[] = User::FromLDAP($user);
 			}
 		} else {
 			die("<h1 style='color:white;text-align: center'>Not connected to LDAP</h1>");

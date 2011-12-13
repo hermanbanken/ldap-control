@@ -8,11 +8,17 @@ class User {
 		foreach($ldap as $key => $value){
 			if(is_object($value)){
 				$i = 0;
-				$user->{$key} = array();
-				while(isset($value->{$i}) && $single = $value->{$i++}) 
-					$user->{$key}[] = $single;
-				if(count($user->{$key}) == 1){
-					$user->{$key} = end($user->{$key});
+				// Parse multi-values
+				while(isset($value->{$i}) && $single = $value->{$i++}){
+					if(isset($user->{$key})){
+						if(is_array($user->{$key})) {
+							$user->{$key}[] = $single;
+						} else {
+							$user->{$key} = array($user->{$key}, $single);
+						}
+					} else {	
+						$user->{$key} = $single;
+					}
 				}
 			} else {
 				$user->{$key} = $value;
