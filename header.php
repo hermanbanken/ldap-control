@@ -2,7 +2,7 @@
 <div class="topbar" data-dropdown="dropdown">
   <div class="topbar-inner">
     <div class="container">
-      <h3><a href=".">Banken</a></h3>
+      <h3><a href="."><?php echo $SETTINGS['authrealm']; ?></a></h3>
       <?php if($user) : ?>
 	  <ul class="nav">
 		<?php

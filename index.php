@@ -50,7 +50,7 @@
 
 <body>
 <?php
-include('lib/ldap.php');
+include('lib/auth.ldap.php');
 $l = new LDAPAuth($SETTINGS);
 
 if(!$l->is_connected())

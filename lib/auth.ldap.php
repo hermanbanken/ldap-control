@@ -1,5 +1,7 @@
 <?php
-class LDAPAuth {
+require_once('interface.auth.php');
+
+class LDAPAuth implements iAuth {
 	private $ds = false;
 	private $user = false;
 	
@@ -26,6 +28,7 @@ class LDAPAuth {
 			$this->ds = ldap_connect($this->settings->host, $this->settings->port);
 			ldap_set_option($this->ds, LDAP_OPT_PROTOCOL_VERSION, $this->settings->version);
 		} catch(Exception $e){
+			
 			$this->ds = false;
 		}
 	}
@@ -34,8 +37,8 @@ class LDAPAuth {
     	global $PHP_AUTH_USER;
     	global $PHP_AUTH_PW;
 		if (
-			$_SESSION['PHP_AUTH_USER'] != "" && 
-			$_SESSION['PHP_AUTH_PW'] != "" && 
+			!empty($_SESSION['PHP_AUTH_USER']) && 
+			!empty($_SESSION['PHP_AUTH_PW']) && 
 			$user = $this->auth_user($_SESSION['PHP_AUTH_USER'], $_SESSION['PHP_AUTH_PW'])
 		) {
 			return $user;
