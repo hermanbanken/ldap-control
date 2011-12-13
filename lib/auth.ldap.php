@@ -37,11 +37,15 @@ class LDAPAuth implements iAuth {
     	global $PHP_AUTH_USER;
     	global $PHP_AUTH_PW;
 		if (
+			!empty($_SESSION['PHP_AUTH_CACHE'])
+		) {
+			$this->user = $_SESSION['PHP_AUTH_CACHE'];
+		} else if (
 			!empty($_SESSION['PHP_AUTH_USER']) && 
 			!empty($_SESSION['PHP_AUTH_PW']) && 
-			$user = $this->auth_user($_SESSION['PHP_AUTH_USER'], $_SESSION['PHP_AUTH_PW'])
+			$this->user = $this->auth_user($_SESSION['PHP_AUTH_USER'], $_SESSION['PHP_AUTH_PW'])
 		) {
-			return $user;
+			return $this->user;
 		} else 
 			return false;
 	}
@@ -58,6 +62,7 @@ class LDAPAuth implements iAuth {
 		} else {
 			die("<h1 style='color:white;text-align: center'>Not connected to LDAP</h1>");
 		}
+		file_write_contents('users.log', json_encode($u));
 		return $u;
 	}
 	
@@ -68,6 +73,9 @@ class LDAPAuth implements iAuth {
 			if ($result[0]) {
                 if (ldap_bind( $this->ds, $result[0]['dn'], $pass) ) {
                 	$this->user = $result[0];
+					$_SESSION['PHP_AUTH_USER'] = $uid;
+					$_SESSION['PHP_AUTH_PW'] = $pass;
+					$_SESSION['PHP_AUTH_CACHE'] = $this->user;
 					return $this->user;
                 }
             }
@@ -75,6 +83,11 @@ class LDAPAuth implements iAuth {
 			die("<h1 style='color:white;text-align: center'>Not connected to LDAP</h1>");
 		}
 		return false;
+	}
+	public function logout_user(){
+		unset($_SESSION['PHP_AUTH_USER']);
+		unset($_SESSION['PHP_AUTH_PW']);
+		unset($_SESSION['PHP_AUTH_CACHE']);
 	}
 	
 	public function ask_auth(){

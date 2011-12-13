@@ -10,12 +10,6 @@
 	$USER_DEFINED_SETTINGS = json_decode(file_get_contents('settings.json'));
 	$SETTINGS = merge($DEFAULT_SETTINGS, $USER_DEFINED_SETTINGS);
 	
-	// Logout when requested
-	if( isset($_GET['logout']) && $_GET['logout'] == '1'){
-		$_SESSION = array();
-		header('Location: .');
-	}
-	
 	// Default page
 	if( !isset($_GET['page']))
 		$_GET['page'] = 'home';
@@ -51,7 +45,14 @@
 <body>
 <?php
 include('lib/auth.ldap.php');
-$l = new LDAPAuth($SETTINGS);
+include('lib/auth.dummy.php');
+$l = new DummyAuth($SETTINGS);//new LDAPAuth($SETTINGS);
+
+// Logout when requested
+if( isset($_GET['logout'])){
+	$l->logout_user();
+	header('Location: .');
+}
 
 if(!$l->is_connected())
 	die("Connecting LDAP server failed.");
