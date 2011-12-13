@@ -4,5 +4,6 @@
 	"basedn":"dc=example,dc=com",
 	"authrealm":"Home Server",
 	"ou":"users",
-	"version": 3
+	"version": 3,
+	"dummy": true
 }

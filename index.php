@@ -44,9 +44,9 @@
 
 <body>
 <?php
-include('lib/auth.ldap.php');
-include('lib/auth.dummy.php');
-$l = new DummyAuth($SETTINGS);//new LDAPAuth($SETTINGS);
+require_once('lib/auth.ldap.php');
+require_once('lib/auth.dummy.php');
+$l = $SETTINGS['dummy'] ? new DummyAuth($SETTINGS) : new LDAPAuth($SETTINGS);
 
 // Logout when requested
 if( isset($_GET['logout'])){
