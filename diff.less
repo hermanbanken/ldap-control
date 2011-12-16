@@ -1,0 +1,69 @@
+@import "bootstrap/lib/mixins";
+
+.diff-view {
+	overflow:hidden;
+	font: 12px 'Bitstream Vera Sans Mono','Courier',monospace;
+	line-height: 1.4;
+}
+.diff-view {	
+	& > div {
+		border-right:1px solid gray;
+	}
+	
+	pre {
+		display:inline;
+		padding:0;
+		margin:0;
+		border:0;
+		background:0;
+		line-height:inherit;
+	}
+	/*
+	
+	.code {
+		display:block;
+		line-height: 1.4;
+		padding: 0 5px;
+	}
+	*/
+}
+
+table.code-diff {
+	font: 12px 'Bitstream Vera Sans Mono','Courier',monospace;
+	margin-bottom:0;
+	
+	td, th {
+		line-height: 10pt;
+		padding: 1px 3px;
+		border-bottom:none;
+		border-top:none;
+	}
+	td.orig, td.new {
+		text-align:right;
+		border-right:1px solid #ccc;
+		padding: 1px 2px;
+	}
+	th.orig, th.new {
+		text-transform:uppercase;
+		font: .7em Arial,monospace;
+		font-weight:bold;
+		line-height:13pt;
+		padding: 1px 2px;
+	}
+	th.new, td.new { border-right:1px solid #aaa; }
+	
+	.file td, .file th {
+		#gradient > .vertical(#FFFFFF, #D4D4D4);
+		line-height:13pt;
+		border-bottom:1px solid white;
+	}
+	
+	pre {
+		font: 12px 'Bitstream Vera Sans Mono','Courier',monospace;
+	}
+	
+	.added {background:#E9FEE2;}
+	.deleted {background:#F7E4E4;}
+	.added:before { content: '+ '; }
+	.deleted:before { content: '- '; }
+}

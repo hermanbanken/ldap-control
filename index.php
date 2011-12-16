@@ -30,6 +30,7 @@
 <link rel='stylesheet/less' type='text/less' href='bootstrap/lib/bootstrap.less' />
 <link rel='stylesheet/less' type='text/less' href='style.less' />
 <link rel='stylesheet/less' type='text/less' href='backup.less' />
+<link rel='stylesheet/less' type='text/less' href='diff.less' />
 <script src="js/jquery.min.js"></script>
 <script src='bootstrap/js/bootstrap-alerts.js'></script>
 <script src='bootstrap/js/bootstrap-buttons.js'></script>

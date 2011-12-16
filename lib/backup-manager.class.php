@@ -23,12 +23,21 @@ class BackupPlan {
 		}
 	}
 	
+	public static function diff($prev, $current){
+		$cmd = "diff -r -N $prev/ $current/";
+		if($output = shell_exec($cmd)){
+			return new Diff($output, $prev, $current);
+		} else {
+			return "Something went wrong, we can't show the differences between the versions of the selected file.";
+		}
+	}
+	
 	public static function formatCommand($date, $source, $dest, $current=false, $exclude=array()){
 		$cmd = "date=$date\n";
-		$cmd.= "rsync -aP " . ($current ? "--link-dest='$current' " : '') . "'$source' '$dest'\n";
 		if(count($exclude) > 0){
-			
+			$exclude = '';
 		}
+		$cmd.= "rsync -aP $exclude " . ($current ? "--link-dest='$current' " : '') . "'$source' '$dest'\n";
 		if($current){
 			$cmd.= "rm -f '$current'\n"; // current
 			$cmd.= "ln -s '$dest' '$current'\n"; // dest
