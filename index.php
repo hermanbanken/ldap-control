@@ -1,31 +1,37 @@
 <?php 
-	session_start(); 
+	session_start();
+	// This file CAN be accessed directly
+	define("BASEPATH", getcwd());
 	
-	// Logout when requested
-	if( isset($_GET['logout']) && $_GET['logout'] == '1'){
-		$_SESSION = array();
-		header('Location: .');
-	}
+	include('lib/actions.php');
 	
+	// Fetch settings
+	$DEFAULT_SETTINGS = json_decode(file_get_contents('settings.default.json'));
+	$USER_DEFINED_SETTINGS = json_decode(file_get_contents('settings.json'));
+	$SETTINGS = merge($DEFAULT_SETTINGS, $USER_DEFINED_SETTINGS);
+	
+	// Default page
 	if( !isset($_GET['page']))
 		$_GET['page'] = 'home';
 		
 	$pages = array(
-		'home'=> "Home", 
-		'calendar' => "Agenda's", 
-		'address' => "Adresboek", 
-		'media' => "Mediatheek", 
-		'backup' => "Backups"
+		'home'=> array("Home", true), 
+		'calendar' => array("Agenda's", true), 
+		'address' => array("Adresboek", true), 
+		'media' => array("Mediatheek", true), 
+		'backup' => array("Backups", true),
+		'user' => array("%u", false)
 	);
 	
 ?><!DOCTYPE html>
 <html>
 <head>
-<title>Banken</title>
-<link rel='stylesheet' type='text/css' href='banken.css' />
-<link rel='stylesheet' type='text/css' href='bootstrap/bootstrap.min.css' />
+<title>LDAP control</title>
 <link rel='stylesheet/less' type='text/less' href='bootstrap/lib/bootstrap.less' />
-<script src="jquery.min.js"></script>
+<link rel='stylesheet/less' type='text/less' href='style.less' />
+<link rel='stylesheet/less' type='text/less' href='backup.less' />
+<link rel='stylesheet/less' type='text/less' href='diff.less' />
+<script src="js/jquery.min.js"></script>
 <script src='bootstrap/js/bootstrap-alerts.js'></script>
 <script src='bootstrap/js/bootstrap-buttons.js'></script>
 <script src='bootstrap/js/bootstrap-dropdown.js'></script>
@@ -34,18 +40,31 @@
 <script src='bootstrap/js/bootstrap-popover.js'></script>
 <script src='bootstrap/js/bootstrap-scrollspy.js'></script>
 <script src='bootstrap/js/bootstrap-tabs.js'></script>
-<script src="less-1.1.5.min.js"></script>
+<script src="js/less-1.1.5.min.js"></script>
+<script type="text/javascript" charset="utf-8">
+    less.env = "development";
+   // less.watch();
+</script>
 </head>
 
 <body>
 <?php
-include('ldap.php');
-$l = new LDAPAuth();
+require_once('lib/auth.ldap.php');
+require_once('lib/auth.dummy.php');
+$l = $SETTINGS['dummy'] ? new DummyAuth($SETTINGS) : new LDAPAuth($SETTINGS);
+
+// Logout when requested
+if( isset($_GET['logout'])){
+	$l->logout_user();
+	header('Location: .');
+}
+
+if(!$l->is_connected())
+	die("Connecting LDAP server failed.");
 
 // Login when processing form
 if( $_SERVER['REQUEST_METHOD'] == 'POST'){
-	$_SESSION['PHP_AUTH_USER'] = $_POST['uid'];
-    $_SESSION['PHP_AUTH_PW'] = $_POST['pass'];
+	$l->auth_user($_POST['uid'],$_POST['pass']);
 }
 
 // Fetch user
@@ -56,7 +75,7 @@ include('header.php');
 
 // Show appropriate content
 if( $user) {
-	include('home.php');
+	include('content.php');
 } else {
 	include('login.php');
 }

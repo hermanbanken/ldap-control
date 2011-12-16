@@ -1,0 +1,9 @@
+{
+	"port": 389,
+	"host":"localhost",
+	"basedn":"dc=example,dc=com",
+	"authrealm":"Home Server",
+	"ou":"users",
+	"version": 3,
+	"dummy": true
+}
