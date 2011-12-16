@@ -27,9 +27,9 @@
 <html>
 <head>
 <title>LDAP control</title>
-<link rel='stylesheet' type='text/css' href='style.css' />
-<link rel='stylesheet' type='text/css' href='bootstrap/bootstrap.min.css' />
 <link rel='stylesheet/less' type='text/less' href='bootstrap/lib/bootstrap.less' />
+<link rel='stylesheet/less' type='text/less' href='style.less' />
+<link rel='stylesheet/less' type='text/less' href='backup.less' />
 <script src="js/jquery.min.js"></script>
 <script src='bootstrap/js/bootstrap-alerts.js'></script>
 <script src='bootstrap/js/bootstrap-buttons.js'></script>
@@ -40,6 +40,10 @@
 <script src='bootstrap/js/bootstrap-scrollspy.js'></script>
 <script src='bootstrap/js/bootstrap-tabs.js'></script>
 <script src="js/less-1.1.5.min.js"></script>
+<script type="text/javascript" charset="utf-8">
+    less.env = "development";
+   // less.watch();
+</script>
 </head>
 
 <body>

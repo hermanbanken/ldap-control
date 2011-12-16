@@ -6,17 +6,17 @@
 	
 	function template_BackupPlanListItem(BackupPlan $plan){
 		echo "
-			<div class='breadcrumb'>
+			<div class='breadcrumb backup'>
 				<h5>$plan->name <small>(id: $plan->id)</small></h5>
 				<span>$plan->source &rarr; $plan->backup_dir</span>
-				<div class='actions'>
-					<div class='one'>
+				<ul class='actions'>
+					<li class='one'>
 						<a href='?page=backup&id=$plan->id&action=backup'>Backup</a>
-					</div>
-					<div class='two'>
+					</li>
+					<li class='two'>
 						<a href='?page=backup&id=$plan->id&action=backup'>Settings</a>
-					</div>
-				</div>
+					</li>
+				</ul>
 			</div>";
 	}
 	
