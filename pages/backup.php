@@ -45,7 +45,7 @@
 		
 		$item = array();
 		$counts = array('a' => 0, 'd' => 0, 'c' => 0, 't' => 0);
-		$diff = $plan->changed($_GET['ref']);
+		$diff = $plan->changed(isset($_GET['ref']) ? $_GET['ref'] : false);
 		$labels = array('a'=>'success', 'd'=>'important', 'c'=>'warning');
 		$title = array('a'=>'New', 'd'=>'Deleted', 'c'=>'Changed');
 		foreach($diff->changelist() as $file){
@@ -125,7 +125,7 @@
 		$bread["?page=backup&id=".$single->id] = $single->name;
 	}
 	
-	if(isset($single) && $_GET['action'] == 'backup')
+	if(isset($single) && isset($_GET['action']) && $_GET['action'] == 'backup')
 		$single->do_backup();
 	
 	// Print navigation
