@@ -89,7 +89,7 @@ class BackupPlan {
 	public function changed($ref_since = false){
 		$compare = $this->find_ref($ref_since);
 		
-		return $this->diff($compare->dir(), $this->source);
+		return $compare ? $this->diff($compare->dir(), $this->source) : new Diff("");
 	}
 	
 	private function find_ref($ref){
