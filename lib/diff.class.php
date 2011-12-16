@@ -1,14 +1,17 @@
 <?php
 class Diff {
 	private $diff;
+	private $out = false;
 	
 	public function __construct($diff, $dir_orig = false, $dir_new = false){
-		$this->diff = $diff;
+		$this->diff = empty($diff) ? false : $diff;
 		$this->dir_orig = $dir_orig;
 		$this->dir_new = $dir_new;
 	}
 	
-	public function __toString(){
+	public function has_diff(){ return $this->diff; }
+	
+	private function parse(){
 		$lines = explode("\n", $this->diff);
 		$out = '';
 		$changes = array();
@@ -17,12 +20,19 @@ class Diff {
 			
 			// File names
 			if(preg_match('/^diff (?<options>.*) (?<from>.*) (?<to>.*)$/', $line, $m)){
+				// Do the files still exist
+				$aE = file_exists($m['from']);
+				$bE = file_exists($m['to']);
+				// Complete file mod
+				$status = $aE ? ($bE ? 'c' : 'd') : 'a';
+				// Compress names
 				if($this->dir_orig) 
-					$m['from'] = str_replace($this->dir_orig, '.', $m['from']);
+					$m['from'] = str_replace($this->dir_orig . '/', '', $m['from']);
 				if($this->dir_new) 
-					$m['to'] = str_replace($this->dir_new, '.', $m['from']);
-				$changes[] = array("old"=>$m['from'], "new"=>$m['to'], "mods" => array());
-				$out .= "<tr class='file'><th class='orig'>Old</th><th class='new'>New</th><th>".$m['from']." -> ".$m['to']."</th></tr>\n";		
+					$m['to'] = str_replace($this->dir_new . '/', '', $m['to']);
+				// Save
+				$changes[] = array("old"=>$m['from'], "new"=>$m['to'], "mods" => array(), "status"=>$status);
+				$out .= "<tr class='file'><th class='orig'>Old</th><th class='new'>New</th><th>".$m['from']." -> ".$m['to']."</th></tr>\n";
 			}
 			// Modification identifiers
 			elseif (preg_match('/^((?<o_s>[0-9]+)(,(?<o_e>[0-9])+)?)(?<mod>[a-z])((?<n_s>[0-9]+)(,(?<n_e>[0-9])+)?)$/', $line, $m)){
@@ -49,7 +59,18 @@ class Diff {
 			}
 		}
 		$this->changes = $changes;
-		return "<table class='code-diff'>$out</table>";
+		$this->out = "<table class='code-diff'>$out</table>";
+		return $this->out;
+	}
+	
+	public function __toString(){
+		return $this->out ? $this->out : $this->parse();
+	}
+	
+	public function changelist(){
+		
+		if(!$this->out) $this->parse();
+		return $this->changes ? $this->changes : array();
 	}
 	
 	public static function test(){}

@@ -24,21 +24,23 @@ class BackupPlan {
 	}
 	
 	public static function diff($prev, $current){
-		$cmd = "diff -r -N $prev/ $current/";
+		$cmd = "diff ".self::excludeOption()." -r -N $prev/ $current/";
 		if($output = shell_exec($cmd)){
 			return new Diff($output, $prev, $current);
 		} else {
-			return "Something went wrong, we can't show the differences between the versions of the selected file.";
+			if( $output === null ) return new Diff("", $prev, $current);
+			else return "Something went wrong, we can't show the differences between the versions of the selected file.";
 		}
 	}
 	
-	public static function formatCommand($date, $source, $dest, $current=false, $exclude=array()){
-		$cmd = "date=$date\n";
+	public static function formatCommand($source, $dest, $current=false, $exclude=array(), $dry = false){
+		$cmd = ""; $excl = "";
 		if(count($exclude) > 0){
-			$exclude = '';
+			foreach($exclude as $ex)
+				$excl.= "--exclude '$ex' ";
 		}
-		$cmd.= "rsync -aP $exclude " . ($current ? "--link-dest='$current' " : '') . "'$source' '$dest'\n";
-		if($current){
+		$cmd.= "rsync -aP ".($dry ? '--dry-run ' : '')."$excl" . ($current ? "--link-dest='$current' " : '') . "'$source/' '$dest'\n";
+		if($current && !$dry){
 			$cmd.= "rm -f '$current'\n"; // current
 			$cmd.= "ln -s '$dest' '$current'\n"; // dest
 		}
@@ -57,7 +59,59 @@ class BackupPlan {
 	}
 	
 	public function get_backups(){
-		$this->backup_dir;
+		$backups = array();
+		$dir = $this->backup_dir.'/'.$this->id;
+		if (is_dir($dir)) {
+		    if ($dh = opendir($dir)) {
+		        while (($file = readdir($dh)) !== false) {
+		        	if(substr($file,0,1) != '.')
+		        	$backups[] = new Backup($file, $dir);
+		        }
+		        closedir($dh);
+		    }
+		}
+		return $backups;
+	}
+	
+	public function next_backup($ref = false){
+		// Find current/compare backup
+		$compare = $this->find_ref($ref);
+		$current = $this->backup_dir."/$this->id/current";
+		
+		$new = new Backup($this->id, $this->backup_dir);
+		return (self::formatCommand($this->source, $new->dir(), $current, array(), false));
+	}
+	
+	public function do_backup(){
+		print_r(shell_exec($this->next_backup()));
+	}
+	
+	public function changed($ref_since = false){
+		$compare = $this->find_ref($ref_since);
+		
+		return $this->diff($compare->dir(), $this->source);
+	}
+	
+	private function find_ref($ref){
+		$backups = $this->get_backups();
+		
+		// Find current/compare backup
+		$compare = false;
+		if(count($backups) > 0){
+			foreach($backups as $b){
+				if(is_a($ref, 'Backup') && $b->equals($ref) || $b->time == $ref || $b === end($backups)){
+					$compare = $b;
+				}
+			}
+		}
+		return $compare;
+	}
+	
+	public static function excludeOption(){
+		$e = array(".*");
+		$o = '';
+		foreach($e as $i) $o.= "-x '$i' ";
+		return $o;
 	}
 	
 	public static function test1(){

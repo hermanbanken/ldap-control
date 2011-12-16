@@ -5,8 +5,9 @@ class Backup {
 	public $name;
 	public $time;
 	public $new;
+	public $path;
 	
-	public function __construct($name){
+	public function __construct($name, $path){
 		if(self::parse_filename($name)){
 			$this->constructFilename($name);
 			$this->new = false;
@@ -14,6 +15,7 @@ class Backup {
 			$this->constructNew($name);
 			$this->new = true;
 		}
+		$this->path = $path;
 	}
 	
 	public function constructFilename($filename){
@@ -28,6 +30,10 @@ class Backup {
 		$this->time = time();
 	}
 	
+	public function dir(){
+		return $this->path . '/' . self::make_filename($this->name, $this->time);
+	}
+	
 	public static function parse_filename($filename){
 		$r_d = '(?P<Y>\d{4})(?P<m>\d{2})(?P<d>\d{2}).(?P<h>\d{2})(?P<i>\d{2})(?P<s>\d{2})';
 		$r = preg_match("/^(?P<name>[a-z\-0-9A-Z]+)_$r_d$/", $filename, $m);
@@ -38,7 +44,11 @@ class Backup {
 		) : false;
 	}
 	public static function make_filename($name, $time){
-		return $name . '_' . date('Ymd.His');
+		return $name . '_' . date('Ymd.His', $time);
+	}
+	
+	public function equals(Backup $p){
+		return (is_object($p) && $this->name === $p->name && $this->time === $p->time);
 	}
 	
 	public static function test1(){

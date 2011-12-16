@@ -124,12 +124,15 @@
 			float:right;
 		}
 		
+		.changes .bar h5 { line-height: 26px }
+		
 		.btn { float:right; }
 		.backups .bar h5 { line-height: 28px; }
 		
 		.actionbar { 
 			padding: 7px 10px;
 			background-color: #DDD;
+			small { line-height: 13px; }
 		}
 		
 		.folder {
@@ -138,6 +141,17 @@
 			background: url('img/folder.png') 10px center no-repeat;
 			line-height:18px;
 			small { float:none; }
+		}
+		
+		.finder {
+			display:inline-block;
+			margin:0 2px;
+			width:16px;
+			height:16px;
+			text-indent: -9999px;
+			background-color: #555;
+			box-shadow: 0 0 5px #ccc;
+			-webkit-mask-box-image: url('img/finder.png');
 		}
 		
 		li.selected {

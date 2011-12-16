@@ -26,41 +26,77 @@
 			</div>";
 	}
 	function template_BackupPlanSingle(BackupPlan $plan){
+		$backups = $plan->get_backups();
+		$option = array();
+		foreach($backups as $b){
+			$sel = $_GET['ref'] == $b->time ? 'selected' : '';
+			$option[] = "<option value='$b->time' $sel>".date("Y-m-d H:i:s", $b->time)."</option>";
+		}
+		
 		echo "
-			<div class='backup single'>
+			<form method='get'><div class='backup single'>
+				<input type='hidden' name='page' value='".urlencode($_GET['page'])."' />
+				<input type='hidden' name='id'   value='".urlencode($_GET['id'])."' />
 				<div class='col1'>
 				<div class='box changes'>
 					<div class='bar'><h5>
-						Changes since <select><option>15-12-2011</option></select>
-					</h5></div>
-					<div class='actionbar'>
-						Select all <small>3 files, 2 additions, 3 deletions</small>
+						Changes <small>since <select name='ref' class='ref'>".implode('', $option)."</select></small>
+					</h5></div>";
+		
+		$item = array();
+		$counts = array('a' => 0, 'd' => 0, 'c' => 0, 't' => 0);
+		$diff = $plan->changed($_GET['ref']);
+		$labels = array('a'=>'success', 'd'=>'important', 'c'=>'warning');
+		$title = array('a'=>'New', 'd'=>'Deleted', 'c'=>'Changed');
+		foreach($diff->changelist() as $file){
+			$name = $file['old'] === $file['new'] ? $file['old'] : $file['old'] .' &rarr; '. $file['new'];
+			$item[] = "<li><span class='label ".$labels[$file['status']]."'>".$title[$file['status']]."</span> $name</li>";
+			$counts[$file['status']]++;
+			$counts['t']++;
+		}
+		
+		echo "		<div class='actionbar'>
+						$counts[t] files <small>$counts[a] additions, $counts[d] deletions, $counts[c] changes</small>
 					</div>
-					<ul class='filelist selectable'>
-						<li><span class='label success'>New</span> File 1</li>
-						<li>File 2</li>
-						<li><span class='label important'>DELETED</span> File 3</li>
-					</ul>
+					<ul class='filelist selectable'>";
+		
+		foreach($item as $i) echo $i;
+		
+		echo "		</ul>
 					<div class='bottom folder'><small>Source: $plan->source</small></div>
 				</div>
 				<div class='box backups'>
 					<div class='bar'><h5>Backups by date 
-					<button type='submit' class='btn primary'>Backup now</button></h5></div>
-					<ul class='backuplist'>
-						<li>Backup 1 <small>2 days ago</small></li>
-						<li>Backup 2 <small>4 days ago</small></li>
-						<li>Backup 3 <small>1 week ago</small></li>
-					</ul>
+					<button type='submit' class='btn primary' name='action' value='backup'>Backup now</button></h5></div>
+					<ul class='backuplist'>";
+		
+		foreach($backups as $b){
+			$dd = time() - $b->time;
+			if($dd < 60)
+				$datediff = "less than a minute ago";
+			elseif($dd < 3600*2)
+				$datediff = sprintf("%d minutes ago", floor($dd / 60));
+			elseif($dd < 3600*24*2)
+				$datediff = sprintf("%d hours ago", floor($dd / 3600));
+			else
+				$datediff = sprintf("%d days ago", floor($dd / 3600*24));
+			
+			global $user;
+			$link = "afp://".$user->uid.'@'.shell_exec('hostname -f').':'.$b->dir();
+			echo "<li>".date("Y-m-d H:i:s", $b->time)." <span class='hover'><a class='finder' title='Open in Finder' href='$link'>Open in Finder</a></span><small>$datediff</small></li>";
+		}
+	
+		echo "		</ul>
 				</div>
 				</div>
 				<div class='col2'>
 				<div class='box diff'>
-					<div class='bar'>Wijzigingen</div>
-					<div class='diff-view'>".BackupPlan::diff($plan->backup_dir.'/'.$plan->id, $plan->source)."</div>
-					<ul><li>No file selected</li></ul>
+					<div class='bar'><h5>Wijzigingen</h5></div>
+					<div class='diff-view'>".$diff."</div>
+					<!--<ul><li>No file selected</li></ul>-->
 				</div>
 				</div>
-			</div>";
+			</div></form>";
 	}
 	
 	// All plans
@@ -89,6 +125,9 @@
 		$bread["?page=backup&id=".$single->id] = $single->name;
 	}
 	
+	if(isset($single) && $_GET['action'] == 'backup')
+		$single->do_backup();
+	
 	// Print navigation
 	print_breadcrumb($bread);
 	
@@ -105,7 +144,7 @@
 	if(isset($single)){ 
 		?><div class='single'>
 			<?php template_BackupPlanSingle($single); ?>
-		</div><?php 
+		</div><?php
 	}
 	echo '</div>';
 ?>
@@ -127,5 +166,9 @@
 	$('li.selectable, .selectable > li').click(function(){
 		$(this).parent().find('.selected').removeClass('selected');
 		$(this).addClass('selected');
+	});
+	
+	$('form .ref').change(function(){
+		$(this).closest('form').submit();
 	});
 </script>
