@@ -8,5 +8,7 @@ interface iAuth {
 	public function auth_user($uid, $pass);
 	public function logout_user();
 	public function is_authenticated();
+	
+	public static function getInstance();
 }
 ?>
