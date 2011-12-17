@@ -92,7 +92,7 @@ class LDAPAuth implements iAuth {
 	}
 	
 	public function modify($dn, $entry){
-		$r = @ldap_modify( $this->ds, $dn, $entry);
+		$r = ldap_modify( $this->ds, $dn, $entry);
 		return $r;
 	}
 	

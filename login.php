@@ -12,6 +12,7 @@
 		}
 	?>
 	<form id='login' method='post'>
+		<input type='hidden' name='formid' value='user.login' />
 		<input type='hidden' id='uid' name='uid' />
 		<input type='password' placeholder='Password...' id='password' name='pass' />
 	</form>

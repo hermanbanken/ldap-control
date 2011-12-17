@@ -63,7 +63,7 @@ if(!$l->is_connected())
 	die("Connecting LDAP server failed.");
 
 // Login when processing form
-if( $_SERVER['REQUEST_METHOD'] == 'POST'){
+if( $_SERVER['REQUEST_METHOD'] == 'POST' && $_POST['formid'] == 'user.login'){
 	$l->auth_user($_POST['uid'],$_POST['pass']);
 }
 

@@ -31,6 +31,12 @@ function print_breadcrumb($bread){
 	echo "</ul>";
 }
 
+function alert_message($message, $type='info'){
+	echo "<div class='alert-message $type'>
+	  <a class='close' href='#' onclick='this.parentNode.parentNode.removeChild(this.parentNode);'>&#215;</a>
+	  <p>".implode("</p><p>", explode("\n\n", $message))."</p></div>";
+}
+
 function merge($a, $b){
 	$c = (array)($a) + array();
 	foreach((array) $b as $k => $v){
