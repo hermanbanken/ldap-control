@@ -17,9 +17,13 @@ class User extends Mustache {
 						$entry[$key] = array(0 => $value);
 					}
 				}
-				alert_message(print_r($entry, true), 'success');
-				$result = $l->modify($user->dn, $entry);
-				alert_message(print_r($result, true), 'warning');
+				
+				// Perform mod
+				try {
+					$result = $l->modify($user->dn, $entry);
+				} catch ( Exception $e ) {
+					alert_message($e, 'error');
+				}
 			}
 		}
 	}
