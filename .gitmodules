@@ -1,3 +1,6 @@
 [submodule "bootstrap"]
 path = bootstrap
 url = https://github.com/twitter/bootstrap.git
+[submodule "mustache"]
+	path = mustache
+	url = https://github.com/bobthecow/mustache.php.git
