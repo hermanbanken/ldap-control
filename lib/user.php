@@ -3,24 +3,25 @@ require_once('mustache/Mustache.php');
 
 class User extends Mustache {
 	
-	public function processForm(){
+	public static function processForm(){
 		$l = LDAPAuth::getInstance();
 		
 		if($_SERVER['REQUEST_METHOD'] !== 'POST') return;
 		if(isset($_POST['formid']) && $_POST['formid'] == 'user.form'){
 			$user = $l->is_authenticated();
 			$editable = array("cn", "displayName", "sn", "mail", "jpegPhoto", "telephoneNumber", "postalCode", "l", "street");
-			if($user && $user->uid === $this->uid){
+			if($user && $user->uid === $_POST['uid']){
 				$entry = array();
 				foreach($_POST as $key => $value){
 					if(in_array($key, $editable)){
-						$entry[$key] = array(0 => $value);
+						$entry[$key] = !empty($value) ? array(0 => $value) : array();
 					}
 				}
 				
 				// Perform mod
 				try {
 					$result = $l->modify($user->dn, $entry);
+					header("Location: ".$_SERVER['REQUEST_URI']);
 				} catch ( Exception $e ) {
 					alert_message($e, 'error');
 				}
@@ -58,6 +59,10 @@ class User extends Mustache {
 			}
 		}
 		return $user;
+	}
+	
+	private function cache(){
+		$_SESSION['User'][$this->uid] = $this;
 	}
 }
 ?>

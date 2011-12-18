@@ -3,7 +3,9 @@
 	// This file CAN be accessed directly
 	define("BASEPATH", getcwd());
 	
-	include('lib/actions.php');
+	require_once('lib/actions.php');
+	require_once('lib/auth.ldap.php');
+	require_once('lib/auth.dummy.php');
 	
 	// Fetch settings
 	$DEFAULT_SETTINGS = json_decode(file_get_contents('settings.default.json'));
@@ -16,12 +18,34 @@
 		
 	$pages = array(
 		'home'=> array("Home", true), 
-		'calendar' => array("Agenda's", true), 
-		'address' => array("Adresboek", true), 
-		'media' => array("Mediatheek", true), 
+		//'calendar' => array("Agenda's", true), 
+		//'address' => array("Adresboek", true), 
+		//'media' => array("Mediatheek", true), 
 		'backup' => array("Backups", true),
 		'user' => array("%u", false)
 	);
+	
+	$l = $SETTINGS['dummy'] ? new DummyAuth($SETTINGS) : new LDAPAuth($SETTINGS);
+
+	// Logout when requested
+	if( isset($_GET['logout'])){
+		$l->logout_user();
+		header('Location: .');
+	}
+
+	if(!$l->is_connected())
+		die("Connecting LDAP server failed.");
+
+	// Login when processing form
+	if( $_SERVER['REQUEST_METHOD'] == 'POST' && $_POST['formid'] == 'user.login'){
+		$l->auth_user($_POST['uid'],$_POST['pass']);
+	}
+
+	// Fetch user
+	$user = $l->is_authenticated();
+	
+	// Process User updates
+	User::processForm();
 	
 ?><!DOCTYPE html>
 <html>
@@ -49,32 +73,12 @@
 
 <body>
 <?php
-require_once('lib/auth.ldap.php');
-require_once('lib/auth.dummy.php');
-$l = $SETTINGS['dummy'] ? new DummyAuth($SETTINGS) : new LDAPAuth($SETTINGS);
-
-// Logout when requested
-if( isset($_GET['logout'])){
-	$l->logout_user();
-	header('Location: .');
-}
-
-if(!$l->is_connected())
-	die("Connecting LDAP server failed.");
-
-// Login when processing form
-if( $_SERVER['REQUEST_METHOD'] == 'POST' && $_POST['formid'] == 'user.login'){
-	$l->auth_user($_POST['uid'],$_POST['pass']);
-}
-
-// Fetch user
-$user = $l->is_authenticated();
 
 // Display menu
 include('header.php');
 
 // Show appropriate content
-if( $user) {
+if($user) {
 	include('content.php');
 } else {
 	include('login.php');
