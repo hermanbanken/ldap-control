@@ -12,19 +12,37 @@ class User extends Mustache {
 			$editable = array("cn", "displayName", "sn", "mail", "jpegPhoto", "telephoneNumber", "postalCode", "l", "street");
 			if($user && $user->uid === $_POST['uid']){
 				$entry = array();
+				// Fields
 				foreach($_POST as $key => $value){
 					if(in_array($key, $editable)){
 						$entry[$key] = !empty($value) ? array(0 => $value) : array();
 					}
 				}
-				
+				// Password
+				if(!empty($_POST['oldPassword'])){ 
+					if($_POST['oldPassword'] === $_SESSION['PHP_AUTH_PW']){
+						if(strlen($_POST['userPassword']) > 6){
+							if($_POST['userPassword'] === $_POST['userPasswordC']){
+								$entry['userPassword'] = array(LDAPAuth::ssha_encode($_POST['userPassword']));
+							} else {
+								alert_message("The entered passwords do not match", 'error', true);
+							}
+						} else {
+							alert_message("The entered password was to short", 'error', true);
+						}
+					} else {
+						alert_message("The old password is incorrect", 'error', true);
+					}
+				}
 				// Perform mod
 				try {
 					$result = $l->modify($user->dn, $entry);
-					header("Location: ".$_SERVER['REQUEST_URI']);
+					alert_message("Successfully changed the profile data", 'success', true);
 				} catch ( Exception $e ) {
-					alert_message($e, 'error');
-				}
+					alert_message($e, 'error', true);
+				}	
+				header("Location: ".$_SERVER['REQUEST_URI']);
+				exit;
 			}
 		}
 	}

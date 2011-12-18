@@ -1,5 +1,6 @@
 <?php 
 	session_start();
+	error_reporting(E_ALL);
 	// This file CAN be accessed directly
 	define("BASEPATH", getcwd());
 	

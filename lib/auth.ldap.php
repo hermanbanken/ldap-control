@@ -24,6 +24,7 @@ class LDAPAuth implements iAuth {
 	}
 	
 	public static function ssha_encode($text) {
+	  $salt;
 	  for ($i=1;$i<=10;$i++) {
 	    $salt .= substr('0123456789abcdef',rand(0,15),1);
 	  }
