@@ -28,6 +28,7 @@ elseif ( array_key_exists($_GET['page'], $pages))
 	        </div>
 	      </div>
 	      <div class="content">
+			<?php alert_stashed_messages(); ?>
 			<?php include('pages/'.$_GET['page']).'.php'; ?>
 	      </div>
 	    </div>

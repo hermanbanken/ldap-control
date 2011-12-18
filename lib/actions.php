@@ -31,6 +31,25 @@ function print_breadcrumb($bread){
 	echo "</ul>";
 }
 
+function alert_message($message, $type='info', $session = false){
+	$alert = "<div class='alert-message $type'>
+	  <a class='close' href='#' onclick='this.parentNode.parentNode.removeChild(this.parentNode);'>&#215;</a>
+	  <p>".implode("</p><p>", explode("\n\n", $message))."</p></div>";
+	if($session){
+		if(!$_SESSION['alert']) $_SESSION['alert'] = array();
+		$_SESSION['alert'][] = array($message, $type); 
+	}else echo $alert;
+}
+
+function alert_stashed_messages(){
+	if(isset($_SESSION['alert']) && count($_SESSION['alert']) > 0){
+		foreach($_SESSION['alert'] as $key => $a){
+			alert_message($a[0], $a[1]);
+			unset($_SESSION['alert'][$key]);
+		}
+	}
+}
+
 function merge($a, $b){
 	$c = (array)($a) + array();
 	foreach((array) $b as $k => $v){

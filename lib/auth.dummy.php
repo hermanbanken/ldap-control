@@ -3,6 +3,17 @@ require_once('interface.auth.php');
 require_once('user.php');
 
 class DummyAuth implements iAuth {
+	private static $instance;
+	
+	public static function getInstance(){
+		if(isset(self::$instance)) return self::$instance;
+		else return false;
+	}
+	
+	public function __construct(){
+		self::$instance = $this;
+	}
+
 	public function is_connected(){
 		return true;
 	}
