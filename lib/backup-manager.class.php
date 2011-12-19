@@ -1,6 +1,9 @@
 <?php
-class BackupPlan {
+require_once("lib/view-model.class.php");
+
+class BackupPlan extends ViewModel {
 	public $id;
+	public $name;
 	public $source;
 	public $backup_dir;
 	public $except = array();
@@ -83,10 +86,13 @@ class BackupPlan {
 	}
 	
 	public function do_backup(){
-		print_r(shell_exec($this->next_backup()));
+		alert_message(shell_exec($this->next_backup()), 'info');
 	}
 	
 	public function changed($ref_since = false){
+		if($ref_since === false && isset($_GET['ref'])){
+			$ref_since = intval($_GET['ref']);
+		}
 		$compare = $this->find_ref($ref_since);
 		
 		return $compare ? $this->diff($compare->dir(), $this->source) : new Diff("");

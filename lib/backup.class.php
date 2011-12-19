@@ -1,11 +1,13 @@
 <?php
+require_once("lib/view-model.class.php");
 
-class Backup {
+class Backup extends ViewModel {
 	public $fn;
 	public $name;
 	public $time;
 	public $new;
 	public $path;
+	public $selected;
 	
 	public function __construct($name, $path){
 		if(self::parse_filename($name)){
@@ -16,6 +18,11 @@ class Backup {
 			$this->new = true;
 		}
 		$this->path = $path;
+	}
+	
+	public function selected(){
+		if(isset($_GET['ref']) && $this->time == $_GET['ref']) return true;
+		return false;
 	}
 	
 	public function constructFilename($filename){
@@ -45,6 +52,11 @@ class Backup {
 	}
 	public static function make_filename($name, $time){
 		return $name . '_' . date('Ymd.His', $time);
+	}
+	
+	public function link(){
+		global $user;
+		return "afp://".$user->uid.'@'.shell_exec('hostname -f').':'.$this->dir();
 	}
 	
 	public function equals(Backup $p){

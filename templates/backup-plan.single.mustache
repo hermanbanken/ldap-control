@@ -1,0 +1,49 @@
+<form method='get'><div class='backup single'>
+	<input type='hidden' name='page' value='{{_get_page}}' />
+	<input type='hidden' name='id'   value='{{_get_id}}' />
+	<div class='col1'>
+	<div class='box changes'>
+		<div class='bar'>
+			<h5>Changes <small>since
+			<select name='ref' class='ref'>{{#get_backups}}
+				<option value='{{time}}' {{#selected}}selected{{/selected}}>{{_fmt_date_time}}</option>
+			{{/get_backups}}</select></small></h5>
+		</div>
+		
+		<!-- Lambda object Diff -->
+		{{#changed}}
+		<div class='actionbar'>
+			{{_num_files}} files
+			<small>{{_num_add}} additions, {{_num_del}} deletions, {{_num_mod}} changes</small>
+		</div>
+		<ul class='filelist selectable'>
+		{{#files}}
+			<li><span class='label {{status_label}}'>{{status_title}}</span> {{name}}</li>
+		{{/files}}
+		</ul>
+		{{/changed}}
+		<div class='bottom folder'><small>Source: {{source}}</small></div>
+	</div>
+	<div class='box backups'>
+		<div class='bar'><h5>
+			Backups by date 
+			<button type='submit' class='btn primary' name='action' value='backup'>Backup now</button>
+		</h5></div>
+		<ul class='backuplist'>
+		{{#get_backups}}
+			<li>{{_fmt_date_time}}
+				<span class='hover'><a class='finder' title='Open in Finder' href='{{link}}'>Open in Finder</a></span>
+				<small>{{_fmt_ago_time}}</small>
+			</li>
+		{{/get_backups}}
+		</ul>
+	</div>
+	</div>
+	<div class='col2'>
+	<div class='box diff'>
+		<div class='bar'><h5>Wijzigingen</h5></div>
+		<div class='diff-view'>{{#changed}}{{{html}}}{{/changed}}</div>
+		<!--<ul><li>No file selected</li></ul>-->
+	</div>
+	</div>
+</div></form>

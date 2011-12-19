@@ -70,6 +70,12 @@ class LDAPAuth implements iAuth {
 		} else {
 			die("<h1 style='color:white;text-align: center'>Not connected to LDAP</h1>");
 		}
+		
+		// Sort users
+		function cmp($a, $b) {
+		    return ($a->uid == $b->uid) ? 0 : ($a->uid < $b->uid) ? -1 : 1;
+		}
+		uasort($u, 'cmp');
 		return $u;
 	}
 	
