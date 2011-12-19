@@ -70,6 +70,18 @@ ul.users form {
 
 ul.users .avatar {
 	-webkit-transition: all .5s linear;
+	position:relative;
+}
+
+ul.users .avatar div .glossy {
+	position:absolute;
+	left:5px;
+	top:5px;
+	width:100px;
+	height:100px;
+	border-radius: 50px;
+	background: url('img/glossy.png');
+	z-index:100;
 }
 
 ul.users.single .avatar { width: 0px; margin: 0; opacity: 0; }
