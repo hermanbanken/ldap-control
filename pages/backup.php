@@ -33,8 +33,13 @@
 		$bread["?page=backup&id=".$single->id] = $single->name;
 	}
 	
-	if(isset($single) && isset($_GET['action']) && $_GET['action'] == 'backup')
-		$single->do_backup();
+	if(isset($single) && isset($_GET['action'])){
+		if($_GET['action'] == 'backup')
+			$single->do_backup();
+		if($_GET['action'] == 'dryrun'){
+			alert_message("Commands that would have been run:\n\n<pre style='color:black;'>".$single->next_backup()."</pre>", 'info');
+		}
+	}
 	
 	// Print navigation
 	print_breadcrumb($bread);

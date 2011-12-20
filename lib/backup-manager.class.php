@@ -10,6 +10,7 @@ class BackupPlan extends ViewModel {
 	public $maxsize = 0;
 	public $starttime = -1;
 	public $interval = -1;
+	protected static $excludes = array(".*");
 	
 	// Restore from settingsfile
 	public function __construct($id = null, $data = array()){
@@ -36,15 +37,28 @@ class BackupPlan extends ViewModel {
 		}
 	}
 	
-	public static function formatCommand($source, $dest, $current=false, $exclude=array(), $dry = false){
-		$cmd = ""; $excl = "";
-		if(count($exclude) > 0){
-			foreach($exclude as $ex)
-				$excl.= "--exclude '$ex' ";
+	public static function formatCommand($source, $dest, $current=false, $exclude=true, $dry = false){
+		$cmd = "";
+		
+		// Gather options
+		$options = array("-aP" => null);
+		
+		// Check for excluded files / dirs
+		if($exclude === true)
+			$options["--exclude"] = self::$excludes;
+		if(is_array($exclude)){
+			$options["--exclude"] = $exclude;
 		}
-		$cmd.= "rsync -aP ".($dry ? '--dry-run ' : '')."$excl" . ($current ? "--link-dest='$current' " : '') . "'$source/' '$dest'\n";
+		
+		// Check if current backups exists
+		if($current && file_exists($current)){
+			$options['--link-dest'] = $current;
+		}
+		
+		// Make command
+		$cmd.= "rsync " . self::formatOptions($options) . " '$source/' '$dest'\n";
 		if($current && !$dry){
-			$cmd.= "rm -f '$current'\n"; // current
+			if(file_exists($current)) $cmd.= "rm -f '$current'\n"; // current
 			$cmd.= "ln -s '$dest' '$current'\n"; // dest
 		}
 		return $cmd;
@@ -62,18 +76,20 @@ class BackupPlan extends ViewModel {
 	}
 	
 	public function get_backups(){
-		$backups = array();
+		if(isset($this->_backups)) return $this->_backups;
+		
+		$this->_backups = array();
 		$dir = $this->backup_dir.'/'.$this->id;
 		if (is_dir($dir)) {
 		    if ($dh = opendir($dir)) {
 		        while (($file = readdir($dh)) !== false) {
-		        	if(substr($file,0,1) != '.')
-		        	$backups[] = new Backup($file, $dir);
+		        	if(substr($file,0,1) != '.' && $file != 'current')
+		        	$this->_backups[] = new Backup($file, $dir);
 		        }
 		        closedir($dh);
 		    }
 		}
-		return $backups;
+		return $this->_backups;
 	}
 	
 	public function next_backup($ref = false){
@@ -81,12 +97,22 @@ class BackupPlan extends ViewModel {
 		$compare = $this->find_ref($ref);
 		$current = $this->backup_dir."/$this->id/current";
 		
-		$new = new Backup($this->id, $this->backup_dir);
-		return (self::formatCommand($this->source, $new->dir(), $current, array(), false));
+		$new = new Backup($this->id, $this->backup_dir . '/'. $this->id);
+		return (self::formatCommand($this->source, $new->dir(), $current, true, false));
 	}
 	
 	public function do_backup(){
-		alert_message(shell_exec($this->next_backup()), 'info');
+		if(!is_writable($this->backup_dir) || !is_readable($this->source)){
+			if(!is_writable($this->backup_dir))
+				alert_message("The backup directory is not writeable. Maybe missing some permissions.", 'error');
+			if(!is_readable($this->source))
+				alert_message("The source directory is not readable. Maybe missing some permissions.", 'error');
+				
+			alert_message("Commands that would have been run if permissions where OK:\n\n<pre style='color:black;'>".$this->next_backup()."</pre>", 'info');
+		} else {
+			alert_message(shell_exec($this->next_backup()), 'info');
+			unset($this->_backups);
+		}
 	}
 	
 	public function changed($ref_since = false){
@@ -114,10 +140,19 @@ class BackupPlan extends ViewModel {
 	}
 	
 	public static function excludeOption(){
-		$e = array(".*");
 		$o = '';
-		foreach($e as $i) $o.= "-x '$i' ";
+		foreach(self::$excludes as $i) $o.= "-x '$i' ";
 		return $o;
+	}
+	
+	public static function formatOptions($options){
+		$str = array();
+		foreach($options as $key => $val){
+			if(is_array($val)){ foreach($val as $v){ $str[] = "$key='$v'"; }}
+			if($val === null) $str[] = $key;
+			if(is_string($val)) $str[] = "$key='$val'";
+		}
+		return implode(" ", $str);
 	}
 	
 	public static function test1(){

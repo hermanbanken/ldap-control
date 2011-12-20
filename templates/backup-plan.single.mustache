@@ -28,6 +28,7 @@
 		<div class='bar'><h5>
 			Backups by date 
 			<button type='submit' class='btn primary' name='action' value='backup'>Backup now</button>
+			<button type='submit' class='btn secondary' name='action' value='dryrun'>Commands</button>
 		</h5></div>
 		<ul class='backuplist'>
 		{{#get_backups}}
@@ -41,7 +42,7 @@
 	</div>
 	<div class='col2'>
 	<div class='box diff'>
-		<div class='bar'><h5>Wijzigingen</h5></div>
+		<div class='bar'><h5>Changes per file</h5></div>
 		<div class='diff-view'>{{#changed}}{{{html}}}{{/changed}}</div>
 		<!--<ul><li>No file selected</li></ul>-->
 	</div>

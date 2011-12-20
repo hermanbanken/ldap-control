@@ -17,7 +17,14 @@ class Diff extends ViewModel {
 	
 	public function has_diff(){ return $this->diff; }
 	
+	private function nochanges(){
+		return "<div class='nochanges'>There a no changes</div>";
+	}
+	
 	private function parse(){
+		// If no changes
+		if(!$this->diff) return $this->nochanges();
+		// If changes
 		$lines = explode("\n", $this->diff);
 		$out = '';
 		$changes = array();
