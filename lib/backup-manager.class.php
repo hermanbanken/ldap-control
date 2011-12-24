@@ -44,9 +44,11 @@ class BackupPlan extends ViewModel {
 		$options = array("-aP" => null);
 		
 		// Check for excluded files / dirs
-		if($exclude === true)
+		if($exclude === true && file_exists('exclude'))
+			$options["--exclude-from"] = realpath("exclude");
+		elseif($exclude === true)
 			$options["--exclude"] = self::$excludes;
-		if(is_array($exclude)){
+		elseif(is_array($exclude)){
 			$options["--exclude"] = $exclude;
 		}
 		
